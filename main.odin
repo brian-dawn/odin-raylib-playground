@@ -5,6 +5,7 @@
 package main
 
 import "core:fmt"
+import "core:odin/printer"
 import "core:strings"
 import rl "vendor:raylib"
 
@@ -12,6 +13,49 @@ Draw_Rect :: proc(position: rl.Vector2, width: int, height: int, color: rl.Color
 	rl.DrawRectangle(i32(position.x), i32(position.y), i32(width), i32(height), color)
 }
 
+Player :: struct {
+	health: int,
+	name:   string,
+	score:  int,
+}
+
+Rect :: struct {
+	position: rl.Vector2,
+	width:    int,
+	height:   int,
+	color:    rl.Color,
+}
+
+Circle :: struct {
+	position: rl.Vector2,
+	radius:   int,
+	color:    rl.Color,
+}
+
+Shape :: union {
+	Rect,
+	Circle,
+}
+
+HandleShape :: proc(shape: Shape) {
+	switch value in shape {
+	case Rect:
+		fmt.printfln(
+			"Rect position: %v, width: %d, height: %d, color: %v",
+			value.position,
+			value.width,
+			value.height,
+			value.color,
+		)
+	case Circle:
+		fmt.printfln(
+			"Circle position: %v, radius: %d, color: %v",
+			value.position,
+			value.radius,
+			value.color,
+		)
+	}
+}
 
 main :: proc() {
 
@@ -20,6 +64,11 @@ main :: proc() {
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(60)
+
+	player := Player {
+		health = 0,
+		name   = "wow",
+	}
 
 	player_position := rl.Vector2{0, 0}
 	player_speed :: 300
