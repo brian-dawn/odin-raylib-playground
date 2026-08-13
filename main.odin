@@ -22,7 +22,7 @@ main :: proc() {
 	rl.SetTargetFPS(60)
 
 	player_position := rl.Vector2{0, 0}
-	player_speed :: 3
+	player_speed :: 300
 
 	for !rl.WindowShouldClose() {
 
@@ -42,7 +42,7 @@ main :: proc() {
 		}
 
 		// calculate player position and make pythagoras happy.
-		player_position += rl.Vector2Normalize(direction) * player_speed
+		player_position += rl.Vector2Normalize(direction) * player_speed * rl.GetFrameTime()
 
 		// Render pipeline.
 		rl.BeginDrawing()
