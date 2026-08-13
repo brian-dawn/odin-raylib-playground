@@ -7,10 +7,15 @@
 
 package main
 
+import "core:container/handle_map"
 import "core:fmt"
-import "core:odin/printer"
+import "core:log"
 import "core:strings"
 import rl "vendor:raylib"
+
+
+import "engine/tilemap"
+
 
 Draw_Rect :: proc(position: rl.Vector2, width: int, height: int, color: rl.Color) {
 	rl.DrawRectangle(i32(position.x), i32(position.y), i32(width), i32(height), color)
@@ -40,6 +45,7 @@ Shape :: union {
 	Circle,
 }
 
+
 HandleShape :: proc(shape: Shape) {
 	switch value in shape {
 	case Rect:
@@ -63,6 +69,8 @@ HandleShape :: proc(shape: Shape) {
 main :: proc() {
 
 	rl.InitWindow(1280, 720, "Odin + Raylib Starter")
+
+	tile_map := tilemap.TileMap{}
 
 	defer rl.CloseWindow()
 

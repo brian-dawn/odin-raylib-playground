@@ -1,0 +1,4 @@
+package tilemap
+
+
+TileMap :: struct {}
