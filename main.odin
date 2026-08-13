@@ -1,6 +1,9 @@
 // We go to the gym ourselves. We do not send our robot to do it for us.
 // Writing code is encoding thinking and a thought process. Structure and validation.
 // Vibe coding is not.
+//
+// https://nathany.com/why-odin/
+//
 
 package main
 
