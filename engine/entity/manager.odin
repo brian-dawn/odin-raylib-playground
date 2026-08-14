@@ -9,8 +9,8 @@ Entity_Manager :: struct {
 	free_indices: [dynamic]Entity_Index,
 }
 
-GENERATION_START :: 1
-GENERATION_EMPTY :: 0
+GENERATION_START :: 0
+GENERATION_EMPTY :: ~u32(0)
 
 // Creates a new entity.
 Entity_Create :: proc(manager: ^Entity_Manager) -> Entity {

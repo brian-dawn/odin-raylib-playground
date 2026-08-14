@@ -20,6 +20,7 @@ make_entity :: proc(index: Entity_Index, generation: Entity_Generation) -> Entit
 
 @(test)
 make_entity_test :: proc(t: ^testing.T) {
+
 	entity := make_entity(0, 0)
 	testing.expect_value(t, entity, 0)
 
