@@ -8,6 +8,7 @@
 package main
 
 import "core:container/handle_map"
+import "core:crypto/tuplehash"
 import "core:fmt"
 import "core:log"
 import "core:strings"
@@ -80,6 +81,7 @@ main :: proc() {
 		health = 0,
 		name   = "wow",
 	}
+
 
 	player_position := rl.Vector2{0, 0}
 	player_speed :: 300
