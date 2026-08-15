@@ -9,6 +9,11 @@ Entity_Manager :: struct {
 	free_indices: [dynamic]Entity_Index,
 }
 
+Entity_Manager_Destroy :: proc(manager: ^Entity_Manager) {
+	delete(manager.generations)
+	delete(manager.free_indices)
+}
+
 GENERATION_START :: 0
 GENERATION_EMPTY :: ~u32(0)
 
@@ -53,6 +58,8 @@ Entity_Is_Alive :: proc(manager: ^Entity_Manager, entity: Entity) -> bool {
 test_entity_manager :: proc(t: ^testing.T) {
 
 	entity_manager := Entity_Manager{}
+	defer Entity_Manager_Destroy(&entity_manager)
+
 	entity := Entity_Create(&entity_manager)
 
 	testing.expect(t, Entity_Is_Alive(&entity_manager, entity))

@@ -34,8 +34,8 @@ Sparce_Set_Add :: proc(set: ^Sparse_Set($T), entity: Entity, component: T) {
 
 		resize(&set.sparse, entity_index + 1)
 
+		// Fill in the gaps with invalid indices.
 		for i in old_len ..< len(set.sparse) {
-
 			set.sparse[i] = INVALID_INDEX
 		}
 	}
@@ -67,23 +67,47 @@ Sparse_Set_Remove :: proc(set: ^Sparse_Set($T), entity: Entity) {
 	set.sparse[entity_index] = INVALID_INDEX
 }
 
-Sparse_Set_Get :: proc(set: ^Sparse_Set($T), entity: Entity) -> ^T {
+// If the entity is present, returns the index of the entity in the sparse set.
+// This is required due to SOA layout.
+Sparse_Set_Get_Index :: proc(set: ^Sparse_Set($T), entity: Entity) -> (u32, bool) {
+
+	if !Sparse_Set_Contains(set, entity) {
+		return INVALID_INDEX, false
+	}
 
 	entity_index := entity_index(entity)
-	dense_index := set.sparse[entity_index]
-
-	return &set.components[dense_index]
+	return set.sparse[entity_index], true
 }
 
-Sparse_Set_Contains :: proc(set: ^Sparse_Set, entity: Entity) -> bool {
+// Returns a copy of the component for the given entity, if it exists.
+// IMPORTANT! this is a copy, not a reference.
+// Modifying the returned value will not affect the original component.
+// Use Sparse_Set_Get_Index to modify the component in place.
+Sparse_Set_Get_Copy :: proc(set: ^Sparse_Set($T), entity: Entity) -> (T, bool) {
+	if !Sparse_Set_Contains(set, entity) {
+		return T{}, false
+	}
+
+	// Because the layout is #soa we need to reconstruct a T ourselves.
+	entity_index := entity_index(entity)
+	return set.components[entity_index], true
+}
+
+Sparse_Set_Contains :: proc(set: ^Sparse_Set($T), entity: Entity) -> bool {
 
 	entity_index := entity_index(entity)
 
-	if u32(len(set.sparse)) <= index {
+	if u32(len(set.sparse)) <= entity_index {
 		return false
 	}
 
-	return set.sparse[entity_index] == entity
+	dense_index := set.sparse[entity_index]
+
+	if dense_index == INVALID_INDEX {
+		return false
+	}
+
+	return set.entities[dense_index] == entity
 }
 
 
@@ -99,11 +123,23 @@ test_sparse_set_functions :: proc(t: ^testing.T) {
 	position_container := Position_Component_Container{}
 	defer Sparse_Set_Destroy(&position_container)
 
+	testing.expect(t, len(position_container.entities) == 0)
 
 	entity := Entity(0)
 	component := Position_Component {
-		x = 0.0,
+		x = 1337,
 		y = 0.0,
 	}
+
+	testing.expect(t, !Sparse_Set_Contains(&position_container, entity))
+
 	Sparce_Set_Add(&position_container, entity, component)
+
+	testing.expect(t, len(position_container.entities) == 1)
+	testing.expect(t, Sparse_Set_Contains(&position_container, entity))
+
+	copy_of_component, found := Sparse_Set_Get_Copy(&position_container, entity)
+
+	testing.expect(t, found)
+	testing.expect_value(t, copy_of_component.x, 1337)
 }
