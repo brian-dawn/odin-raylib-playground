@@ -138,8 +138,29 @@ test_sparse_set_functions :: proc(t: ^testing.T) {
 	testing.expect(t, len(position_container.entities) == 1)
 	testing.expect(t, Sparse_Set_Contains(&position_container, entity))
 
-	copy_of_component, found := Sparse_Set_Get_Copy(&position_container, entity)
+	{
+		copy_of_component, found := Sparse_Set_Get_Copy(&position_container, entity)
 
-	testing.expect(t, found)
-	testing.expect_value(t, copy_of_component.x, 1337)
+		testing.expect(t, found)
+		testing.expect_value(t, copy_of_component.x, 1337)
+	}
+
+	{
+		component_index, found := Sparse_Set_Get_Index(&position_container, entity)
+		testing.expect(t, found)
+		component_reference := &position_container.components[component_index]
+		testing.expect_value(t, component_reference.x, 1337)
+
+		// Now we should be able to use this reference to modify the component.
+
+		component_reference.x = 42
+
+		// Now refetch the component to verify the change.
+		{
+			copy_of_component, found := Sparse_Set_Get_Copy(&position_container, entity)
+			testing.expect(t, found)
+			testing.expect_value(t, copy_of_component.x, 42)
+		}
+	}
+
 }
