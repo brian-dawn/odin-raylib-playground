@@ -2,7 +2,9 @@ package entity
 
 import "core:testing"
 
-INVALID_INDEX :: ~u32(0)
+
+Dense_Index :: distinct u32
+INVALID_INDEX :: Dense_Index(~u32(0))
 
 // Sparse set to enable efficient storage, retrieval, and removal of components by entity.
 Component_Store :: struct($T: typeid) {
@@ -11,7 +13,7 @@ Component_Store :: struct($T: typeid) {
 	components: #soa[dynamic]T,
 
 	// Dense index to sparse index mapping.
-	sparse:     [dynamic]u32,
+	sparse:     [dynamic]Dense_Index,
 }
 
 Component_Store_Destroy :: proc(set: ^Component_Store($T)) {
@@ -24,7 +26,7 @@ Component_Store_Add :: proc(set: ^Component_Store($T), entity: Entity, component
 
 	entity_index := entity_index(entity)
 
-	dense_index := u32(len(set.entities))
+	dense_index := Dense_Index(len(set.entities))
 
 	append(&set.entities, entity)
 	append(&set.components, component)
@@ -69,7 +71,13 @@ Component_Store_Remove :: proc(set: ^Component_Store($T), entity: Entity) {
 
 // If the entity is present, returns the index of the entity in the sparse set.
 // This is required due to SOA layout.
-Component_Store_Get_Index :: proc(set: ^Component_Store($T), entity: Entity) -> (u32, bool) {
+Component_Store_Get_Index :: proc(
+	set: ^Component_Store($T),
+	entity: Entity,
+) -> (
+	Dense_Index,
+	bool,
+) {
 
 	if !Component_Store_Contains(set, entity) {
 		return INVALID_INDEX, false
@@ -125,7 +133,7 @@ test_sparse_set_functions :: proc(t: ^testing.T) {
 
 	testing.expect(t, len(position_container.entities) == 0)
 
-	entity := Entity(0)
+	entity := Entity{}
 	component := Position_Component {
 		x = 1337,
 		y = 0.0,
