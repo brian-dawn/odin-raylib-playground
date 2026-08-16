@@ -97,8 +97,13 @@ Component_Store_Get_Copy :: proc(set: ^Component_Store($T), entity: Entity) -> (
 	}
 
 	// Because the layout is #soa we need to reconstruct a T ourselves.
-	entity_index := entity_index(entity)
-	return set.components[entity_index], true
+	dense_index, found := Component_Store_Get_Index(set, entity)
+	if !found {
+		return T{}, false
+	}
+
+
+	return set.components[dense_index], true
 }
 
 Component_Store_Contains :: proc(set: ^Component_Store($T), entity: Entity) -> bool {
@@ -171,4 +176,23 @@ test_sparse_set_functions :: proc(t: ^testing.T) {
 		}
 	}
 
+}
+
+@(test)
+test_component_store_sparse_entity_index :: proc(t: ^testing.T) {
+	Test_Component :: struct {
+		value: int,
+	}
+	Store :: Component_Store(Test_Component)
+
+	store := Store{}
+	defer Component_Store_Destroy(&store)
+
+	entity := make_entity(1, 0)
+
+	Component_Store_Add(&store, entity, Test_Component{value = 1337})
+	value, found := Component_Store_Get_Copy(&store, entity)
+
+	testing.expect(t, found)
+	testing.expect_value(t, value.value, 1337)
 }
