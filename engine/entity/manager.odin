@@ -28,7 +28,7 @@ Entity_Create :: proc(manager: ^Entity_Manager) -> Entity {
 	}
 
 	// Otherwise, allocate a new index.
-	new_entity_index := u32(len(manager.generations))
+	new_entity_index := Entity_Index(len(manager.generations))
 
 	// Initialize the generation to 1, generation 0 is reserved for destroyed entities.
 	append(&manager.generations, GENERATION_START)

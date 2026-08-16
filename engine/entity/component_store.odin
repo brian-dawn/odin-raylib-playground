@@ -29,7 +29,7 @@ Component_Store_Add :: proc(set: ^Component_Store($T), entity: Entity, component
 	append(&set.entities, entity)
 	append(&set.components, component)
 
-	if u32(len(set.sparse)) <= entity_index {
+	if Entity_Index(len(set.sparse)) <= entity_index {
 		old_len := len(set.sparse)
 
 		resize(&set.sparse, entity_index + 1)
@@ -97,7 +97,7 @@ Component_Store_Contains :: proc(set: ^Component_Store($T), entity: Entity) -> b
 
 	entity_index := entity_index(entity)
 
-	if u32(len(set.sparse)) <= entity_index {
+	if Entity_Index(len(set.sparse)) <= entity_index {
 		return false
 	}
 

@@ -9,7 +9,7 @@ import rl "vendor:raylib"
 // Unique identifier for an entity.
 Entity :: distinct u64
 // Where the entity lives in the entity pool.
-Entity_Index :: u32
+Entity_Index :: distinct u32
 // The generation of the entity, used to detect stale references.
 Entity_Generation :: u32
 
