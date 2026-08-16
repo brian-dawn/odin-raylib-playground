@@ -9,7 +9,7 @@ Movement_Update :: proc(w: ^World, dt: f32) {
 
 		entity := w.velocities.entities[i]
 
-		velocity := &w.velocities.components[entity]
+		velocity := &w.velocities.components[i]
 
 		transform_index, found := e.Component_Store_Get_Index(&w.transforms, entity)
 		if !found {
