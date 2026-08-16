@@ -47,6 +47,9 @@ test_world_functions :: proc(t: ^testing.T) {
 
 	Add_Velocity(&world, entity, c.Velocity{velocity = rl.Vector2{2, 1}})
 
-	// A sample way a system might
+	// One tick...
+	Movement_Update(&world, 1)
+
+	testing.expect_value(t, world.transforms.components[0].position, rl.Vector2{102, -299})
 
 }
