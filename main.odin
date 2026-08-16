@@ -15,6 +15,7 @@ import "core:strings"
 import rl "vendor:raylib"
 
 
+import "engine/entity"
 import "engine/tilemap"
 
 
